@@ -25,14 +25,19 @@ def train_model():
             predicted = cnn(imgs)
             print('PREDICTED', predicted)
             score = predicted[:, 0]
-            score = torch.Tensor.sigmoid(score)
+            # score = torch.sigmoid(score)
             print('SCORE', score.float())
             predicted_bbox = predicted[:, 1:5]
             loss_class = loss_func_classification(score.float(), labels.float())
-            loss_bbox = loss_func_mse(bbox, predicted_bbox)
+            print(labels)
+            mask = labels == 1
+            print(mask)
+            loss_bbox = loss_func_mse(bbox[mask], predicted_bbox[mask])
             optimizer.zero_grad()
-            loss_class.backward(retain_graph = True)
-            loss_bbox.backward(retain_graph = True)
+            loss = 1000 * loss_class
+            loss.backward(retain_graph = True)
+            print(loss_class)
+            print(loss_bbox)
             optimizer.step()
             loss_list_class.append(loss_class.item())
             loss_list_bbox.append(loss_bbox.item())
