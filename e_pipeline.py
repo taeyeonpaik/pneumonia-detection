@@ -25,7 +25,7 @@ def train_model():
             predicted = cnn(imgs)
             print('PREDICTED', predicted)
             score = predicted[:, 0]
-            # score = torch.sigmoid(score)
+            score = torch.sigmoid(score)
             print('SCORE', score.float())
             predicted_bbox = predicted[:, 1:5]
             loss_class = loss_func_classification(score.float(), labels.float())

@@ -59,11 +59,11 @@ def get_data_loader():
         transforms.Normalize(mean = [0.49011201641896834, 0.49011201641896834, 0.49011201641896834],
                                 std = [0.2481732866714441, 0.2481732866714441, 0.2481732866714441])
     ])
-    train_dataset = RSNADataset('/Users/taeyeonpaik/Downloads/rsna-pneumonia-detection-challenge/',
+    train_dataset = RSNADataset('/home/ec2-user/rsna',
                             'stage_2_train_images_png/', 
                             'stage_2_train_labels.csv', 
                             transform = transform_train)
-    test_dataset = RSNADataset('/Users/taeyeonpaik/Downloads/rsna-pneumonia-detection-challenge/',
+    test_dataset = RSNADataset('/home/ec2-user/rsna/',
                             'stage_2_test_images_png/', 
                             'stage_2_train_labels.csv', 
                             transform = transform_test)

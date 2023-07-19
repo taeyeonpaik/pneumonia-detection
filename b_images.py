@@ -3,8 +3,8 @@ import os
 import pydicom
 from PIL import Image
 
-INPUTDIR = '/Users/taeyeonpaik/Downloads/rsna-pneumonia-detection-challenge/stage_2_train_images'
-OUTDIR = '/Users/taeyeonpaik/Downloads/rsna-pneumonia-detection-challenge/stage_2_train_images_png'
+INPUTDIR = '/home/ec2-user/rsna/stage_2_train_images'
+OUTDIR = '/home/ec2-user/rsna/stage_2_train_images_png'
 
 for filename in os.listdir(INPUTDIR):
     if filename.endswith('.dcm'):
@@ -14,8 +14,8 @@ for filename in os.listdir(INPUTDIR):
         png_filename = os.path.splitext(filename)[0] + '.png'
         image.save(os.path.join(OUTDIR, png_filename))
 
-INPUTDIR = '/Users/taeyeonpaik/Downloads/rsna-pneumonia-detection-challenge/stage_2_test_images'
-OUTDIR = '/Users/taeyeonpaik/Downloads/rsna-pneumonia-detection-challenge/stage_2_test_images_png'
+INPUTDIR = '/home/ec2-user/rsna/stage_2_test_images'
+OUTDIR = '/home/ec2-user/rsna/stage_2_test_images_png'
 
 for filename in os.listdir(INPUTDIR):
     if filename.endswith('.dcm'):
