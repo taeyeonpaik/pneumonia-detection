@@ -1,6 +1,7 @@
 .vscode/
-stage_2_test_images/
-stage_2_test_images_png/
-stage_2_train_images/
-stage_2_train_images_png/
+test_images/
+test_images_png/
+train_images/
+train_images_png/
 *.csv
+train_images_png.zip

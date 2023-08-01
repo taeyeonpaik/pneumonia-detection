@@ -60,11 +60,11 @@ def get_data_loader():
                                 std = [0.2481732866714441, 0.2481732866714441, 0.2481732866714441])
     ])
     train_dataset = RSNADataset('/home/ec2-user/rsna/',
-                            'stage_2_train_images_png/', 
+                            'train_images_png/', 
                             'stage_2_train_labels.csv', 
                             transform = transform_train)
     test_dataset = RSNADataset('/home/ec2-user/rsna/',
-                            'stage_2_test_images_png/', 
+                            'test_images_png/', 
                             'stage_2_train_labels.csv', 
                             transform = transform_test)
     train_loader = DataLoader(train_dataset, batch_size = 4, shuffle = True)
