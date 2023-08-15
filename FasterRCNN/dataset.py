@@ -9,7 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 class RSNADataset(Dataset):
     def __init__(self, dataframe, image_directory, transform = None):
         super().__init__()
-        self.image_ids = dataframe['patientId']
+        self.image_ids = dataframe['patientId'].unique()
         self.dataframe = dataframe
         self.image_directory = image_directory
         self.transform = transform
@@ -32,29 +32,36 @@ class RSNADataset(Dataset):
 def get_train_transform():
     return A.Compose([A.Flip(0.5), A.Rotate(limit = 360), ToTensorV2(p = 1.0)])
 
-def get_test_transform():
+def get_valid_test_transform():
     return A.Compose([ToTensorV2(p = 1.0)])
 
 def collate(batch):
     return tuple(zip(*batch))
 
 def prepare_data():
-    train_directory = f"/Users/taeyeonpaik/Downloads/rsna/train_images_png"
-    test_directory = f"/Users/taeyeonpaik/Downloads/rsna/test_images_png"
-    train_dataframe = pd.read_csv(f"/Users/taeyeonpaik/Downloads/rsna/stage_2_train_labels.csv")
-    test_dataframe = pd.read_csv(f"/Users/taeyeonpaik/Downloads/rsna/stage_2_sample_submission.csv")
-    train_dataframe_positive = pd.DataFrame(columns = ['patientId', 'x', 'y', 'width', 'height', 'Target'])
+    directory = f"/Users/taeyeonpaik/Downloads/rsna/train_images_png" # directory = f"/home/ec2-user/rsna/train_images_png"
+    dataframe = pd.read_csv(f"/Users/taeyeonpaik/Downloads/rsna/stage_2_train_labels.csv") # dataframe = pd.read_csv(f"/home/ec2-user/rsna/stage_2_train_labels.csv")
+    dataframe_positive = pd.DataFrame(columns = ['patientId', 'x', 'y', 'width', 'height', 'Target'])
     k = 0
-    for i in range(len(train_dataframe)):
-        if train_dataframe.loc[i]['Target'] == 1:
-            train_dataframe_positive.loc[k] = train_dataframe.loc[i]
+    for i in range(len(dataframe)):
+        if dataframe.loc[i]['Target'] == 1:
+            dataframe_positive.loc[k] = dataframe.loc[i]
             k += 1
-    train_dataset = RSNADataset(train_dataframe_positive, train_directory, get_train_transform())
-    test_dataset = RSNADataset(test_dataframe, test_directory, get_test_transform())
-    return train_dataset, test_dataset
+    image_ids = dataframe['patientId'].unique()
+    train_ids = image_ids[:-4] # train_ids = image_ids[:-5000]
+    valid_ids = image_ids[-4:-2] # valid_ids = image_ids[-5000:-2500]
+    test_ids = image_ids[-2:] # test_ids = image_ids[-2500:]
+    train_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(train_ids)]
+    valid_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(valid_ids)]
+    test_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(test_ids)]
+    train_dataset = RSNADataset(train_dataframe, directory, get_train_transform())
+    valid_dataset = RSNADataset(valid_dataframe, directory, get_valid_test_transform())
+    test_dataset = RSNADataset(test_dataframe, directory, get_valid_test_transform)
+    return train_dataset, valid_dataset, test_dataset
     
 def get_data_loader(batch_size):
-    train_dataset, test_dataset = prepare_data()
-    train_data_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle = True, collate_fn = collate)
-    test_data_loader = DataLoader(test_dataset, batch_size = batch_size, shuffle = False, collate_fn = collate)
-    return train_data_loader, test_data_loader
+    train_dataset, valid_dataset, test_dataset = prepare_data()
+    train_dataloader = DataLoader(train_dataset, batch_size = batch_size, shuffle = True, collate_fn = collate)
+    valid_dataloader = DataLoader(valid_dataset, batch_size = batch_size, shuffle = False, collate_fn = collate)
+    test_dataloader = DataLoader(test_dataset, batch_size = batch_size, shuffle = False, collate_fn = collate)
+    return train_dataloader, valid_dataloader, test_dataloader
