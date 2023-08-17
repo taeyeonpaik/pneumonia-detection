@@ -87,16 +87,15 @@ def validate(dataloader, model, device, threshold):
     return precision
 
 def annotate(model, device, threshold):
-    test_images = os.listdir(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png") # test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png")
+    test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png") # test_images = os.listdir(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png")
     model.to(device).eval()
     results = []
     with torch.no_grad():
         for i, image in tqdm(enumerate(test_images), total = len(test_images)):
-            original_image = cv2.imread(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR) # original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR)
-
+            original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR) # original_image = cv2.imread(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR)
             image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
             image = np.transpose(image, (2, 0, 1)).astype(np.float32)
-            image = torch.tensor(image, dtype = torch.float) # image = torch.tensor(image, dtype = torch.float).cuda()
+            image = torch.tensor(image, dtype = torch.float).cuda() # image = torch.tensor(image, dtype = torch.float)
             image = torch.unsqueeze(image, 0)
             outputs = [{k: v.to(device) for k, v in t.items()} for t in model(image)]
             for _ in range(len(outputs[0]['boxes'])):
@@ -109,7 +108,7 @@ def annotate(model, device, threshold):
                 cv2.rectangle(original_image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 0, 255), 3)
             plt.imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
             plt.axis('off')
-            plt.savefig(f"/Users/taeyeonpaik/Downloads/rsna/test_images_bbox/{test_images[i]}") # plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}"})
+            plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}") # plt.savefig(f"/Users/taeyeonpaik/Downloads/rsna/test_images_bbox/{test_images[i]}")
             plt.close()
             result = {'patientId': test_images[i].split('.')[0], 'PredictionString': format_prediction_string(boxes, scores) if len(outputs[0]['boxes']) != 0 else None}
             results.append(result)
@@ -119,7 +118,7 @@ def annotate(model, device, threshold):
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 loss_history = Averager()
 model = model().to(device)
-total_epochs, batch_size, threshold = 1, 2, 0.5 # total_epochs, batch_size, threshold = 10, 8, 0.9
+total_epochs, batch_size, threshold = 1, 2, 0.5 # total_epochs, batch_size, threshold = 20, 8, 0.9
 params = [p for p in model.parameters() if p.requires_grad]
 train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_size)
 optimizer = torch.optim.SGD(params, lr = 0.005, momentum = 0.9, weight_decay = 0.0005)
