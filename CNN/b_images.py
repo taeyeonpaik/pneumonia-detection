@@ -1,26 +1,20 @@
-"""docstring"""
 import os
 import pydicom
 from PIL import Image
 
-INPUTDIR = '/home/ec2-user/rsna/stage_2_train_images'
-OUTDIR = '/home/ec2-user/rsna/stage_2_train_images_png'
-
-for filename in os.listdir(INPUTDIR):
+input_directory, output_directory= '/home/ec2-user/rsna/stage_2_train_images', '/home/ec2-user/rsna/stage_2_train_images_png'
+for filename in os.listdir(input_directory):
     if filename.endswith('.dcm'):
-        ds = pydicom.dcmread(os.path.join(INPUTDIR, filename))
-        pixel_array_numpy = ds.pixel_array
+        dataset = pydicom.dcmread(os.path.join(input_directory, filename))
+        pixel_array_numpy = dataset.pixel_array
         image = Image.fromarray(pixel_array_numpy)
         png_filename = os.path.splitext(filename)[0] + '.png'
-        image.save(os.path.join(OUTDIR, png_filename))
-
-INPUTDIR = '/home/ec2-user/rsna/stage_2_test_images'
-OUTDIR = '/home/ec2-user/rsna/stage_2_test_images_png'
-
-for filename in os.listdir(INPUTDIR):
+        image.save(os.path.join(output_directory, png_filename))
+input_directory, output_directory= '/home/ec2-user/rsna/stage_2_test_images', '/home/ec2-user/rsna/stage_2_test_images_png'
+for filename in os.listdir(input_directory):
     if filename.endswith('.dcm'):
-        ds = pydicom.dcmread(os.path.join(INPUTDIR, filename))
-        pixel_array_numpy = ds.pixel_array
+        dataset = pydicom.dcmread(os.path.join(input_directory, filename))
+        pixel_array_numpy = dataset.pixel_array
         image = Image.fromarray(pixel_array_numpy)
         png_filename = os.path.splitext(filename)[0] + '.png'
-        image.save(os.path.join(OUTDIR, png_filename))
+        image.save(os.path.join(output_directory, png_filename))

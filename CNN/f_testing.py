@@ -1,60 +1,51 @@
-"""docstring"""
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_auc_score
-from e_pipeline import train_model, cnn
 from c_dataset import get_data_loader
+from e_pipeline import train_model, cnn
+from sklearn.metrics import roc_auc_score
 
-train_model()
-cnn.eval()
-with torch.no_grad():
-    TRUE_POSITIVES = 0
-    FALSE_POSITIVES = 0
-    TRUE_NEGATIVES = 0
-    FALSE_NEGATIVES = 0
-    THRESHOLD = 0.5
-    true, pred = [], []
-    for img, label, bbox in get_data_loader()[1]:
-        output, last_layer = cnn(img)
-        predicted = torch.Tensor.max(output, 1)[1].data.squeeze()
-        if label == 1 and predicted >= THRESHOLD:
-            TRUE_POSITIVES += 1
-        elif label == 0 and predicted >= THRESHOLD:
-            FALSE_POSITIVES += 1
-        elif label == 0 and predicted < THRESHOLD:
-            TRUE_NEGATIVES += 1
-        elif label == 1 and predicted < THRESHOLD:
-            FALSE_NEGATIVES += 1
-        true.append(label)
-        pred.append(predicted)
-        accuracy = (predicted == label).sum().item() / float(label.size(0))
-    precision = TRUE_POSITIVES / (TRUE_POSITIVES + FALSE_POSITIVES)
-    recall = TRUE_POSITIVES / (TRUE_POSITIVES + FALSE_NEGATIVES)
-    f1 = 2 * (precision * recall) / (precision + recall)
-
-    cf_matrix = np.array([[TRUE_NEGATIVES, FALSE_POSITIVES], [FALSE_NEGATIVES, TRUE_POSITIVES]])
-    classes = ['Negative', 'Positive']
-    plt.imshow(cf_matrix, interpolation = 'nearest', cmap = 'BuGn')
-    plt.title('Confusion Matrix')
+def print_confusion_matrix(true_positives, false_positives, true_negatives, false_negatives, truth, prediction):
+    confusion_matrix = np.array([[true_negatives, false_positives], [false_negatives, true_positives]])
+    plt.imshow(confusion_matrix, interpolation = 'nearest', cmap = 'BuGn')
+    tick_marks = np.arange(len(['Negative', 'Positive']))
     plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation = 45)
-    plt.yticks(tick_marks, classes)
-    threshold = cf_matrix.max() / 2.0
-    for i, j in np.ndindex(cf_matrix.shape):
-        plt.text(j, i, format(cf_matrix[i, j], 'd'),
-                horizontalalignment = "center",
-                color = "black" if cf_matrix[i, j] > threshold else "black")
+    plt.title('Confusion Matrix')
+    plt.xticks(tick_marks, ['Negative', 'Positive'], rotation = 45)
+    plt.yticks(tick_marks, ['Negative', 'Positive'])
+    threshold = confusion_matrix.max() / 2.0
+    for i, j in np.ndindex(confusion_matrix.shape):
+        plt.text(j, i, format(confusion_matrix[i, j], 'd'), horizontalalignment = "center", color = "black" if confusion_matrix[i, j] > threshold else "black")
     plt.ylabel('Ground Truth')
     plt.xlabel('Predicted Label')
     plt.tight_layout()
     plt.show()
-
-    auroc = roc_auc_score(true, pred)
+    auroc = roc_auc_score(truth, prediction)
     print("AUROC:", auroc)
 
+train_model()
+cnn.eval()
+with torch.no_grad():
+    true_positives, false_positives, true_negatives, false_negatives, threshold, truth, prediction = 0, 0, 0, 0, 0.5, [], [] # threshold = 0.9
+    for image, label, box in get_data_loader()[1]:
+        output = cnn(image)
+        label_prediction, box_prediction = 1 if output[0] >= threshold else , output[1:5]
+        if label == 1 and label_prediction == 1 and box_prediction == box:
+            true_positives += 1
+        elif label == 0 and label_prediction == 1:
+            false_positives += 1
+        elif label == 0 and label_prediction == 0:
+            true_negatives += 1
+        elif label == 1 and label_prediction == 0:
+            false_negatives += 1
+        truth.append(label)
+        prediction.append(label_prediction)
+        accuracy = (label_prediction == label).sum().item() / float(label.size(0))
+    precision = true_positives / (true_positives + false_positives)
+    recall = true_positives / (true_positives + false_negatives)
+    f1_score = 2 * (precision * recall) / (precision + recall)
     print(f'Accuracy: %.2f {accuracy}')
     print(f'Precision: %.2f {precision}')
     print(f'Recall: %.2f {recall}')
-    print(f'F1 score: %.2f {f1}')
+    print(f'F1 score: %.2f {f1_score}')
+    print_confusion_matrix(true_positives, false_positives, true_negatives, false_negatives, truth, prediction)

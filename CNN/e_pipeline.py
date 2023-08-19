@@ -1,50 +1,38 @@
-"""docstring"""
-import numpy as np
 import torch
-from torch import optim
-from torch.autograd import Variable
+import numpy as np
 from torch import nn
 from d_model import CNN
+from torch import optim
+from torch.autograd import Variable
 from c_dataset import get_data_loader
 
-cnn = CNN()
-
 def train_model():
-    """docstring"""
-    loss_func_classification = nn.BCELoss()
-    loss_func_mse = nn.MSELoss()
-    optimizer = optim.Adam(cnn.parameters(), lr = 0.001)
-    num_epochs = 10
     cnn.train()
-    train_loader = get_data_loader()[0]
-    for epoch in range(num_epochs):
-        print(f"Epoch {epoch + 1}/{num_epochs}, loss =", end = ' ')
-        loss_list_class, loss_list_bbox = [], []
-        for (imgs, labels, bbox) in train_loader:
-            imgs, labels = Variable(imgs), Variable(labels)
-            predicted = cnn(imgs)
-            print('PREDICTED', predicted)
-            score = predicted[:, 0]
-            score = torch.sigmoid(score)
-            print('SCORE', score.float())
-            predicted_bbox = predicted[:, 1:5]
-            loss_class = loss_func_classification(score.float(), labels.float())
-            print(labels)
-            mask = labels == 1
-            print(mask)
-            loss_bbox = loss_func_mse(bbox[mask], predicted_bbox[mask])
+    loss_function_mean_squared_error, loss_function_classification = nn.MSELoss(), nn.BCELoss()
+    optimizer = optim.Adam(cnn.parameters(), lr = 0.001)
+    train_loader, epochs = get_data_loader()[0], 1 # epochs = 20
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}, loss =", end = ' ')
+        loss_list_class, loss_list_box = [], []
+        for i, (images, labels, boxes) in tqdm(enumerate(train_loader), len = len(train_loader)):
+            images, labels = Variable(images), Variable(labels)
+            predicted = cnn(images)
+            score = torch.sigmoid(predicted[:, 0])
+            predicted_box = predicted[:, 1:5]
+            loss_class = loss_function_classification(score.float(), labels.float())
+            loss_box = loss_function_mean_squared_error(box[labels == 1], predicted_box[labels == 1])
             optimizer.zero_grad()
             loss = 1000 * loss_class
-            loss.backward(retain_graph = True)
-            print(loss_class)
-            print(loss_bbox)
+            loss.backward() # retain_graph = True
             optimizer.step()
             loss_list_class.append(loss_class.item())
-            loss_list_bbox.append(loss_bbox.item())
-        print(np.array(loss_list_class).mean())
-        print(np.array(loss_list_bbox).mean())
-    print(cnn)
+            loss_list_box.append(loss_box.item())
+            print(f"Epoch #{epoch + 1}, Batch #{i + 1}, Loss: {loss_class.item()} and {loss_box.item()}")
+            if i == 0: # Delete
+                break # Delete
+        print(f"Epoch #{epoch + 1}, Loss: {sum(loss_list_class) / len(loss_list_class)} and {sum(loss_list_box) / len(loss_list_box}")
 
 if __name__ == '__main__':
+    cnn = CNN()
     train_model()
     
