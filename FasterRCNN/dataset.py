@@ -39,8 +39,8 @@ def collate(batch):
     return tuple(zip(*batch))
 
 def prepare_data():
-    directory = f"/home/ec2-user/rsna/train_images_png" # directory = f"/Users/taeyeonpaik/Downloads/rsna/train_images_png"
-    dataframe = pd.read_csv(f"/home/ec2-user/rsna/stage_2_train_labels.csv") # dataframe = pd.read_csv(f"/Users/taeyeonpaik/Downloads/rsna/stage_2_train_labels.csv")
+    directory = f"/home/ec2-user/rsna/train_images_png"
+    dataframe = pd.read_csv(f"/home/ec2-user/rsna/stage_2_train_labels.csv")
     dataframe_positive = pd.DataFrame(columns = ['patientId', 'x', 'y', 'width', 'height', 'Target'])
     k = 0
     for i in range(len(dataframe)):
@@ -48,15 +48,15 @@ def prepare_data():
             dataframe_positive.loc[k] = dataframe.loc[i]
             k += 1
     image_ids = dataframe['patientId'].unique()
-    train_ids = image_ids[:-4] # train_ids = image_ids[:-5000]
-    valid_ids = image_ids[-4:-2] # valid_ids = image_ids[-5000:-2500]
-    test_ids = image_ids[-2:] # test_ids = image_ids[-2500:]
+    train_ids = image_ids[:-5000]
+    valid_ids = image_ids[-5000:-2500]
+    test_ids = image_ids[-2500:]
     train_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(train_ids)]
     valid_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(valid_ids)]
     test_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(test_ids)]
     train_dataset = RSNADataset(train_dataframe, directory, get_train_transform())
     valid_dataset = RSNADataset(valid_dataframe, directory, get_valid_test_transform())
-    test_dataset = RSNADataset(test_dataframe, directory, get_valid_test_transform)
+    test_dataset = RSNADataset(test_dataframe, directory, get_valid_test_transform())
     return train_dataset, valid_dataset, test_dataset
     
 def get_data_loader(batch_size):

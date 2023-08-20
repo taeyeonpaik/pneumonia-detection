@@ -47,9 +47,8 @@ def best_match(truth, prediction, prediction_index, threshold = 0.5, ious = None
     return best_match_index
 
 def calculate_image_precision(truth, predictions, threshold = 0.5):
-    image_precision = 0.0
     intersection_over_unions = np.ones((len(truth), len(predictions))) * -1
-    n, true_positive, false_positive = len(predictions), 0, 0
+    image_precision, n, true_positive, false_positive = 0.0, len(predictions), 0, 0
     for prediction_index in range(n):
         best_match_truth_idx = best_match(truth.copy(), predictions[prediction_index], prediction_index, threshold = threshold, ious = intersection_over_unions)
         if best_match_truth_idx >= 0:
@@ -87,15 +86,15 @@ def validate(dataloader, model, device, threshold):
     return precision
 
 def annotate(model, device, threshold):
-    test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png") # test_images = os.listdir(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png")
+    test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png")
     model.to(device).eval()
     results = []
     with torch.no_grad():
         for i, image in tqdm(enumerate(test_images), total = len(test_images)):
-            original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR) # original_image = cv2.imread(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR)
+            original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR)
             image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
             image = np.transpose(image, (2, 0, 1)).astype(np.float32)
-            image = torch.tensor(image, dtype = torch.float).cuda() # image = torch.tensor(image, dtype = torch.float)
+            image = torch.tensor(image, dtype = torch.float).cuda()
             image = torch.unsqueeze(image, 0)
             outputs = [{k: v.to(device) for k, v in t.items()} for t in model(image)]
             for _ in range(len(outputs[0]['boxes'])):
@@ -108,7 +107,7 @@ def annotate(model, device, threshold):
                 cv2.rectangle(original_image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 0, 255), 3)
             plt.imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
             plt.axis('off')
-            plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}") # plt.savefig(f"/Users/taeyeonpaik/Downloads/rsna/test_images_bbox/{test_images[i]}")
+            plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}")
             plt.close()
             result = {'patientId': test_images[i].split('.')[0], 'PredictionString': format_prediction_string(boxes, scores) if len(outputs[0]['boxes']) != 0 else None}
             results.append(result)
@@ -118,15 +117,15 @@ def annotate(model, device, threshold):
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 loss_history = Averager()
 model = model().to(device)
-total_epochs, batch_size, threshold = 1, 2, 0.5 # total_epochs, batch_size, threshold = 20, 8, 0.9
+total_epochs, batch_size, threshold = 20, 16, 0.9
 params = [p for p in model.parameters() if p.requires_grad]
-train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_size)
+train_data_loader, valid_data_loa[plkh,mb der, test_data_loader = get_data_loader(batch_size)
 optimizer = torch.optim.SGD(params, lr = 0.005, momentum = 0.9, weight_decay = 0.0005)
 learning_rate_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 4, gamma = 0.1)
 
 for epoch in range(total_epochs):
     train_loss_history, end, start = train(train_data_loader, learning_rate_scheduler, model, optimizer, device, epoch + 1, loss_history)
     print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
-    precision = validate(valid_data_loader, model, device, threshold)
+    precision = validate(test_data_loader, model, device, threshold)
     print(f"Epoch #{epoch + 1}, Precision: {precision}")
 annotate(model, device, threshold)

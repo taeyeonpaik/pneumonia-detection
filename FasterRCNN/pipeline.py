@@ -18,8 +18,6 @@ def train(dataloader, learning_rate_scheduler, model, optimizer, device, epoch, 
         optimizer.step()
         end_batch = time.time()
         print(f"Epoch #{epoch}, Batch #{i + 1}, Loss: {loss_value}, Time: {(end_batch - start_batch) / 60:.3f} Minutes")
-        if i == 0: # Delete
-            break # Delete
     if learning_rate_scheduler is not None:
         learning_rate_scheduler.step()
     end = time.time()

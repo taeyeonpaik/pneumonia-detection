@@ -20,11 +20,11 @@ class RSNADataset(Dataset):
         image_name = self.data.iloc[index, 0]
         image_path = os.path.join(self.root, self.image_directory, image_name + '.png')
         image = PIL.Image.open(image_path).convert("RGB")
-        label = self.data.iloc[index, -1]
+        label = torch.tensor(self.data.iloc[index, -1], dtype = torch.float32)
         bbox = torch.Tensor(list(self.data.iloc[index, 1:5]))
         if self.transform:
             image = self.transform(image)
-        return image, label, bbox
+        return image.to('cuda'), label.to('cuda'), bbox.to('cuda')
 
     def calculate_mean_std(self, image_folder):
         image_file_names = os.listdir(image_folder)
@@ -43,9 +43,9 @@ class RSNADataset(Dataset):
 
 def get_data_loader():
     dataframe = pd.read_csv('/home/ec2-user/rsna/stage_2_train_labels.csv')
-    train_data = dataframe[:-4] # train_data = dataframe[:-5000]
-    valid_data = dataframe[-4:-2] # valid_data = dataframe[-5000:-2500]
-    test_data = dataframe[-2:] # test_data = dataframe[-2500:]
+    train_data = dataframe[:-5000]
+    valid_data = dataframe[-5000:-2500]
+    test_data = dataframe[-2500:]
     transform_train = transforms.Compose([transforms.RandomHorizontalFlip(), transforms.RandomResizedCrop(1024, scale = (0.8, 1.0)),
         transforms.RandomApply([transforms.RandomAffine((-5, 5), translate = (0.1, 0.1))], p = 0.5), transforms.ToTensor(),
         transforms.Normalize(mean = [0.49011201641896834, 0.49011201641896834, 0.49011201641896834], std = [0.2481732866714441, 0.2481732866714441, 0.2481732866714441])])
@@ -54,7 +54,7 @@ def get_data_loader():
     train_dataset = RSNADataset('/home/ec2-user/rsna/', 'train_images_png/', train_data, transform = transform_train)
     valid_dataset = RSNADataset('/home/ec2-user/rsna/', 'train_images_png/', valid_data, transform = transform_valid_test)
     test_dataset = RSNADataset('/home/ec2-user/rsna/', 'train_images_png/', test_data, transform = transform_valid_test)
-    train_dataloader = DataLoader(train_dataset, batch_size = 4, shuffle = True)
-    valid_dataloader = DataLoader(valid_dataset, batch_size = 4, shuffle = False)
-    test_dataloader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
+    train_dataloader = DataLoader(train_dataset, batch_size = 16, shuffle = True)
+    valid_dataloader = DataLoader(valid_dataset, batch_size = 1, shuffle = False)
+    test_dataloader = DataLoader(test_dataset, batch_size = 1, shuffle = False)
     return train_dataloader, valid_dataloader, test_dataloader
