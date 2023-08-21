@@ -117,9 +117,9 @@ def annotate(model, device, threshold):
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 loss_history = Averager()
 model = model().to(device)
-total_epochs, batch_size, threshold = 20, 16, 0.9
+total_epochs, batch_size, threshold = 10, 32, 0.9
 params = [p for p in model.parameters() if p.requires_grad]
-train_data_loader, valid_data_loa[plkh,mb der, test_data_loader = get_data_loader(batch_size)
+train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_size)
 optimizer = torch.optim.SGD(params, lr = 0.005, momentum = 0.9, weight_decay = 0.0005)
 learning_rate_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 4, gamma = 0.1)
 

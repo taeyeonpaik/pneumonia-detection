@@ -54,7 +54,7 @@ def get_data_loader():
     train_dataset = RSNADataset('/home/ec2-user/rsna/', 'train_images_png/', train_data, transform = transform_train)
     valid_dataset = RSNADataset('/home/ec2-user/rsna/', 'train_images_png/', valid_data, transform = transform_valid_test)
     test_dataset = RSNADataset('/home/ec2-user/rsna/', 'train_images_png/', test_data, transform = transform_valid_test)
-    train_dataloader = DataLoader(train_dataset, batch_size = 16, shuffle = True)
+    train_dataloader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
     valid_dataloader = DataLoader(valid_dataset, batch_size = 1, shuffle = False)
     test_dataloader = DataLoader(test_dataset, batch_size = 1, shuffle = False)
     return train_dataloader, valid_dataloader, test_dataloader

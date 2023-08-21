@@ -1,6 +1,8 @@
 import torch
 import numpy as np
+from torch import nn
 from d_model import CNN
+from torch import optim
 import matplotlib.pyplot as plt
 from e_pipeline import train_model
 from c_dataset import get_data_loader
@@ -24,7 +26,7 @@ def print_confusion_matrix(true_positives, false_positives, true_negatives, fals
     auroc = roc_auc_score(truth, prediction)
     print("AUROC:", auroc)
 
-def testing(epoch):
+def testing():
     model.eval()
     with torch.no_grad():
         true_positives, false_positives, true_negatives, false_negatives, threshold = 0, 0, 0, 0, 0.9
@@ -44,26 +46,23 @@ def testing(epoch):
             label_truth.append(label)
             box_prediction_list.append(box_prediction)
             label_prediction_list.append(label_prediction)
-            accuracy = (label_prediction == label and box_prediction == box).sum().item() / float(label.size(0))
-        precision = true_positives / (true_positives + false_positives)
-        recall = true_positives / (true_positives + false_negatives)
-        f1_score = 2 * (precision * recall) / (precision + recall)
-        print(f'Epoch #Accuracy: {accuracy:.2f}')
-        print(f'Precision: {precision:.2f}')
-        print(f'Recall: {recall:.2f}')
-        print(f'F1 score: {f1_score:.2f}')
+        accuracy = (label_prediction == label and box_prediction == box).sum().item() / float(label.size(0))
+        precision = true_positives / (true_positives + false_positives) if true_positives + false_positives != 0 else 0
+        recall = true_positives / (true_positives + false_negatives) if true_positives + false_positives != 0 else 0
+        f1_score = 2 * (precision * recall) / (precision + recall) if precision + recall != 0 else 0
         print(true_positives, false_positives, true_negatives, false_negatives)
-
-loss_function_mean_squared_error, loss_function_classification = nn.MSELoss(), nn.BCELoss()
-optimizer = optim.Adam(model.parameters(), lr = 0.001)
-train_loader, epochs = get_data_loader()[0], 20
-loss_list_class, loss_list_box, losses = [], [], []
+        return accuracy, precision, recall, f1_score
 
 model = CNN()
 model.to('cuda')
-for epoch in range(epochs):
-    train_model(model, loss_list_class, loss_list_box, losses, train_loader)
-    print(f"Epoch #{epoch + 1}, Loss: {sum(losses) / len(losses)}")
+loss_function_mean_squared_error, loss_function_classification = nn.MSELoss(), nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr = 0.001)
+train_loader, epochs = get_data_loader()[0], 10
+loss_list_class, loss_list_box, losses = [], [], []
 
-    testing(epoch)
+for epoch in range(epochs):
+    train_model(model, loss_list_class, loss_list_box, losses, train_loader, loss_function_mean_squared_error, loss_function_classification, optimizer, epoch)
+    print("Epoch #{}, Loss: {}".format(epoch + 1, sum(losses) / len(losses)))
+    accuracy, precision, recall, f1_score = testing()
+    print("Epoch #{}, Accuracy: {:.2f}, Precision: {:.2f}, Recall: {:.2f}, F1 score: {:.2f}".format(epoch + 1, accuracy, precision, recall, f1_score))
     # print_confusion_matrix(true_positives, false_positives, true_negatives, false_negatives, np.array(label_truth), np.array(label_prediction_list))
