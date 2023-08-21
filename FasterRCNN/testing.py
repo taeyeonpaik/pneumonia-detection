@@ -46,18 +46,21 @@ def best_match(truth, prediction, prediction_index, threshold = 0.5, ious = None
             best_match_index = truth_index
     return best_match_index
 
-def calculate_image_precision(truth, predictions, threshold = 0.5):
-    intersection_over_unions = np.ones((len(truth), len(predictions))) * -1
-    image_precision, n, true_positive, false_positive = 0.0, len(predictions), 0, 0
-    for prediction_index in range(n):
-        best_match_truth_idx = best_match(truth.copy(), predictions[prediction_index], prediction_index, threshold = threshold, ious = intersection_over_unions)
-        if best_match_truth_idx >= 0:
-            true_positive += 1
-            truth[best_match_truth_idx] = -1
-        else:
-            false_positive += 1    
-    precision_at_threshold = true_positive / (true_positive + false_positive)
-    image_precision += precision_at_threshold
+def calculate_image_precision(truths, predictions, thresholds):
+    intersection_over_unions = np.ones((len(truths), len(predictions))) * -1
+    image_precision = 0.0
+    for threshold in thresholds:
+        true_positive, false_positive = 0, 0
+        for prediction_index in range(len(predictions)):
+            best_match_truth_idx = best_match(truths.copy(), predictions[prediction_index], prediction_index, threshold = threshold, ious = intersection_over_unions)
+            if best_match_truth_idx >= 0:
+                true_positive += 1
+                truths[best_match_truth_idx] = -1
+            else:
+                false_positive += 1 
+        false_negative = (truths.sum(axis = 1) > 0).sum()
+        precision_at_threshold = true_positive / (true_positive + false_positive + false_negative)
+        image_precision += precision_at_threshold / len(thresholds)
     return image_precision
 
 def format_prediction_string(boxes, scores):
@@ -66,7 +69,7 @@ def format_prediction_string(boxes, scores):
         prediction_strings.append("{0:.4f} {1} {2} {3} {4}".format(i[0], int(i[1][0]), int(i[1][1]), int(i[1][2]), int(i[1][3])))
     return " ".join(prediction_strings)
 
-def validate(dataloader, model, device, threshold):
+def validate(dataloader, model, device, thresholds):
     valid_image_precision = []
     model.eval()
     with torch.no_grad():
@@ -80,7 +83,7 @@ def validate(dataloader, model, device, threshold):
                 truth_boxes = targets[i]['boxes'].cpu().numpy()
                 preds_sorted_idx = np.argsort(scores)[::-1]
                 predictions_sorted = boxes[preds_sorted_idx]
-                image_precision = calculate_image_precision(predictions_sorted, truth_boxes, threshold = threshold)
+                image_precision = calculate_image_precision(predictions_sorted, truth_boxes, thresholds)
                 valid_image_precision.append(image_precision)
         precision = np.mean(valid_image_precision)
     return precision
@@ -117,7 +120,7 @@ def annotate(model, device, threshold):
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 loss_history = Averager()
 model = model().to(device)
-total_epochs, batch_size, threshold = 10, 32, 0.9
+total_epochs, batch_size, thresholds = 10, 16, (0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75)
 params = [p for p in model.parameters() if p.requires_grad]
 train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_size)
 optimizer = torch.optim.SGD(params, lr = 0.005, momentum = 0.9, weight_decay = 0.0005)
@@ -126,6 +129,6 @@ learning_rate_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size =
 for epoch in range(total_epochs):
     train_loss_history, end, start = train(train_data_loader, learning_rate_scheduler, model, optimizer, device, epoch + 1, loss_history)
     print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
-    precision = validate(test_data_loader, model, device, threshold)
+    precision = validate(test_data_loader, model, device, thresholds)
     print(f"Epoch #{epoch + 1}, Precision: {precision}")
-annotate(model, device, threshold)
+annotate(model, device, threshold = 0.9)
