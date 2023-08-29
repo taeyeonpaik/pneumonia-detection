@@ -3,11 +3,31 @@ import cv2
 import torch
 import numpy as np
 import pandas as pd
+from torch import nn
 from tqdm import tqdm
-from model import model
-from pipeline import train
+from torch import optim
+from model_CNN import CNN
+from pipeline_CNN import train
 import matplotlib.pyplot as plt
 from dataset import get_data_loader
+
+def print_confusion_matrix(true_positives, false_positives, true_negatives, false_negatives, truth, prediction):
+    confusion_matrix = np.array([[true_negatives, false_positives], [false_negatives, true_positives]])
+    plt.imshow(confusion_matrix, interpolation = 'nearest', cmap = 'BuGn')
+    tick_marks = np.arange(len(['Negative', 'Positive']))
+    plt.colorbar()
+    plt.title('Confusion Matrix')
+    plt.xticks(tick_marks, ['Negative', 'Positive'], rotation = 45)
+    plt.yticks(tick_marks, ['Negative', 'Positive'])
+    threshold = confusion_matrix.max() / 2.0
+    for i, j in np.ndindex(confusion_matrix.shape):
+        plt.text(j, i, format(confusion_matrix[i, j], 'd'), horizontalalignment = "center", color = "black" if confusion_matrix[i, j] > threshold else "black")
+    plt.ylabel('Ground Truth')
+    plt.xlabel('Predicted Label')
+    plt.tight_layout()
+    plt.show()
+    auroc = roc_auc_score(truth, prediction)
+    print("AUROC:", auroc)
 
 class Averager:
     def __init__(self):
@@ -47,8 +67,7 @@ def best_match(truth, prediction, prediction_index, threshold = 0.5, ious = None
     return best_match_index
 
 def calculate_image_precision(truths, predictions, thresholds):
-    intersection_over_unions = np.ones((len(truths), len(predictions))) * -1
-    image_precision = 0.0
+    intersection_over_unions, image_precision = np.ones((len(truths), len(predictions))) * -1, 0.0
     for threshold in thresholds:
         true_positive, false_positive = 0, 0
         for prediction_index in range(len(predictions)):
@@ -88,7 +107,7 @@ def validate(dataloader, model, device, thresholds):
         precision = np.mean(valid_image_precision)
     return precision
 
-def annotate(model, device, threshold):
+def annotate(model, device, train_loss, precision_history, threshold):
     test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png")
     model.to(device).eval()
     results = []
@@ -115,20 +134,31 @@ def annotate(model, device, threshold):
             result = {'patientId': test_images[i].split('.')[0], 'PredictionString': format_prediction_string(boxes, scores) if len(outputs[0]['boxes']) != 0 else None}
             results.append(result)
     submission_dataframe = pd.DataFrame(results, columns = ['patientId', 'PredictionString'])
+    plt.figure()
+    plt.plot(train_loss, label = 'Training Loss')
+    plt.legend()
+    plt.show()
+    plt.savefig(f"/home/ec2-user/rsna/loss.png")
+    plt.figure()
+    plt.plot(precision_history, label = 'Testing Precision')
+    plt.legend()
+    plt.show()
+    plt.savefig(f"/home/ec2-user/rsna/precision.png")
     return submission_dataframe
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-loss_history = Averager()
-model = model().to(device)
+model = CNN().to(device)
+optimizer = optim.Adam(model.parameters(), lr = 0.001)
+mean_squared_error, binary_cross_entropy, loss_history = nn.MSELoss(), nn.BCELoss(), Averager()
 total_epochs, batch_size, thresholds = 10, 16, (0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75)
-params = [p for p in model.parameters() if p.requires_grad]
 train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_size)
-optimizer = torch.optim.SGD(params, lr = 0.005, momentum = 0.9, weight_decay = 0.0005)
-learning_rate_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 4, gamma = 0.1)
 
+train_loss, precision_history = [], []
 for epoch in range(total_epochs):
-    train_loss_history, end, start = train(train_data_loader, learning_rate_scheduler, model, optimizer, device, epoch + 1, loss_history)
+    train_loss_history, end, start = train(train_data_loader, model, optimizer, device, loss_history, mean_squared_error, binary_cross_entropy)
     print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
     precision = validate(test_data_loader, model, device, thresholds)
     print(f"Epoch #{epoch + 1}, Precision: {precision}")
-annotate(model, device, threshold = 0.9)
+    train_loss.append(train_loss_history.value)
+    precision_history.append(precision)
+annotate(model, device, train_loss, precision_history, threshold = 0.9)

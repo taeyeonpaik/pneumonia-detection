@@ -30,7 +30,7 @@ class RSNADataset(Dataset):
         return self.image_ids.shape[0]
     
 def get_train_transform():
-    return A.Compose([A.Flip(0.5), A.Rotate(limit = 360), ToTensorV2(p = 1.0)])
+    return A.Compose([A.Flip(0.5), A.Rotate(limit = 15), ToTensorV2(p = 1.0)])
 
 def get_valid_test_transform():
     return A.Compose([ToTensorV2(p = 1.0)])

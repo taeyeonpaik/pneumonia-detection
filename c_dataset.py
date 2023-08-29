@@ -13,9 +13,6 @@ class RSNADataset(Dataset):
         self.data = data
         self.transform = transform
 
-    def __len__(self):
-        return len(self.data)
-
     def __getitem__(self, index):
         image_name = self.data.iloc[index, 0]
         image_path = os.path.join(self.root, self.image_directory, image_name + '.png')
@@ -25,11 +22,13 @@ class RSNADataset(Dataset):
         if self.transform:
             image = self.transform(image)
         return image.to('cuda'), label.to('cuda'), bbox.to('cuda')
+    
+    def __len__(self):
+        return len(self.data)
 
     def calculate_mean_std(self, image_folder):
         image_file_names = os.listdir(image_folder)
-        pixel_sum, num_pixels = 0, 0
-        sum_pixel_square = 0
+        pixel_sum, num_pixels, sum_pixel_square = 0, 0, 0
         for file_name in image_file_names:
             image_path = os.path.join(image_folder, file_name)
             image = PIL.Image.open(image_path)
