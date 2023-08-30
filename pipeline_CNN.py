@@ -8,7 +8,7 @@ def train(dataloader, model, optimizer, device, loss_history, loss_function_clas
     start = time.time()
     loss_history.reset()
     progress_bar = tqdm(total = len(dataloader))
-    for i, (images, targets, _) in enumerate(dataloader):
+    for images, targets, _ in dataloader:
         images = torch.stack([image.to(device) for image in images])
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
         predicted = model(images)

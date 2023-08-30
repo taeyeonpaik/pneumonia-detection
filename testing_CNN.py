@@ -10,6 +10,7 @@ from model_CNN import CNN
 from pipeline_CNN import train
 import matplotlib.pyplot as plt
 from dataset import get_data_loader
+from sklearn.metrics import roc_auc_score
 
 def print_confusion_matrix(true_positives, false_positives, true_negatives, false_negatives, truth, prediction):
     confusion_matrix = np.array([[true_negatives, false_positives], [false_negatives, true_positives]])
@@ -108,12 +109,12 @@ def validate(dataloader, model, device, thresholds):
     return precision
 
 def annotate(model, device, train_loss, precision_history, threshold):
-    test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png")
+    test_images = os.listdir(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png") #"/home/ec2-user/rsna/test_images_png"
     model.to(device).eval()
     results = []
     with torch.no_grad():
         for i, image in tqdm(enumerate(test_images), total = len(test_images)):
-            original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR)
+            original_image = cv2.imread(f"/Users/taeyeonpaik/Downloads/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR) #/home/ec2-user/rsna/test_images_png/
             image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
             image = np.transpose(image, (2, 0, 1)).astype(np.float32)
             image = torch.tensor(image, dtype = torch.float).cuda()
@@ -129,7 +130,7 @@ def annotate(model, device, train_loss, precision_history, threshold):
                 cv2.rectangle(original_image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 0, 255), 3)
             plt.imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
             plt.axis('off')
-            plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}")
+            plt.savefig(f"/Users/taeyeonpaik/Downloads/rsna/test_images_bbox/{test_images[i]}") #/home/ec2-user/rsna/test_images_bbox/
             plt.close()
             result = {'patientId': test_images[i].split('.')[0], 'PredictionString': format_prediction_string(boxes, scores) if len(outputs[0]['boxes']) != 0 else None}
             results.append(result)
@@ -138,12 +139,12 @@ def annotate(model, device, train_loss, precision_history, threshold):
     plt.plot(train_loss, label = 'Training Loss')
     plt.legend()
     plt.show()
-    plt.savefig(f"/home/ec2-user/rsna/loss.png")
+    plt.savefig(f"/Users/taeyeonpaik/Downloads/rsna/loss.png") #/home/ec2-user/rsna/loss.png
     plt.figure()
     plt.plot(precision_history, label = 'Testing Precision')
     plt.legend()
     plt.show()
-    plt.savefig(f"/home/ec2-user/rsna/precision.png")
+    plt.savefig(f"/Users/taeyeonpaik/Downloads/rsna/precision.png") #/home/ec2-user/rsna/precision.png
     return submission_dataframe
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -155,7 +156,7 @@ train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_s
 
 train_loss, precision_history = [], []
 for epoch in range(total_epochs):
-    train_loss_history, end, start = train(train_data_loader, model, optimizer, device, loss_history, mean_squared_error, binary_cross_entropy)
+    train_loss_history, end, start = train(train_data_loader, model, optimizer, device, loss_history, binary_cross_entropy, mean_squared_error)
     print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
     precision = validate(test_data_loader, model, device, thresholds)
     print(f"Epoch #{epoch + 1}, Precision: {precision}")

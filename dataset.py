@@ -43,8 +43,8 @@ def collate(batch):
     return tuple(zip(*batch))
 
 def prepare_data():
-    directory = f"/home/ec2-user/rsna/train_images_png"
-    dataframe = pd.read_csv(f"/home/ec2-user/rsna/stage_2_train_labels.csv")
+    directory = f"/Users/taeyeonpaik/Downloads/rsna/train_images_png" #"/home/ec2-user/rsna/train_images_png"
+    dataframe = pd.read_csv(f"/Users/taeyeonpaik/Downloads/rsna/stage_2_train_labels.csv") #"/home/ec2-user/rsna/stage_2_train_labels.csv"
     # dataframe_positive = pd.DataFrame(columns = ['patientId', 'x', 'y', 'width', 'height', 'Target'])
     # k = 0
     # for i in range(len(dataframe)):
