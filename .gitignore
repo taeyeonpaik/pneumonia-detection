@@ -5,3 +5,4 @@ train_images/
 train_images_png/
 *.csv
 train_images_png.zip
+__pycache__/
