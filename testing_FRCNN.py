@@ -155,7 +155,7 @@ learning_rate_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size =
 
 train_loss, precision_history = [], []
 for epoch in range(total_epochs):
-    train_loss_history, end, start = train(train_data_loader, learning_rate_scheduler, model, optimizer, device, loss_history)
+    train_loss_history, end, start = train(train_data_loader, learning_rate_scheduler, model, optimizer, device, loss_history, epoch + 1)
     print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
     precision = validate(test_data_loader, model, device, thresholds)
     print(f"Epoch #{epoch + 1}, Precision: {precision}")

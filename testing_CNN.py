@@ -108,7 +108,7 @@ def validate(dataloader, model, device, thresholds):
         precision = np.mean(valid_image_precision)
     return precision
 
-def annotate(model, device, train_loss, precision_history, threshold):
+def annotate(model, device, train_loss, valid_loss, precision_history, threshold):
     test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png") #"/Users/taeyeonpaik/Downloads/rsna/test_images_png"
     model.to(device).eval()
     results = []
@@ -137,6 +137,7 @@ def annotate(model, device, train_loss, precision_history, threshold):
     submission_dataframe = pd.DataFrame(results, columns = ['patientId', 'PredictionString'])
     plt.figure()
     plt.plot(train_loss, label = 'Training Loss')
+    plt.plot(valid_loss, label = 'Validation Loss')
     plt.legend()
     plt.show()
     plt.savefig(f"/home/ec2-user/rsna/loss.png") #/Users/taeyeonpaik/Downloads/rsna/loss.png
@@ -154,12 +155,23 @@ mean_squared_error, binary_cross_entropy, loss_history = nn.MSELoss(), nn.BCELos
 total_epochs, batch_size, thresholds = 10, 16, (0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75)
 train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_size)
 
-train_loss, precision_history = [], []
+train_loss, valid_loss, precision_history = [], [], []
 for epoch in range(total_epochs):
-    train_loss_history, end, start = train(train_data_loader, model, optimizer, device, loss_history, binary_cross_entropy, mean_squared_error)
-    print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
-    precision = validate(test_data_loader, model, device, thresholds)
+    train_loss_history, end, start = train(train_data_loader, model, optimizer, device, loss_history, binary_cross_entropy, mean_squared_error, epoch + 1)
+    print(f"Epoch #{epoch + 1}, Train Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
+    # valid_loss_history, end, start = train(valid_data_loader, model, optimizer, device, loss_history, binary_cross_entropy, mean_squared_error, epoch + 1)
+    # print(f"Epoch #{epoch + 1}, Valid Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
+
+    # get precision number for both training and validation set
+    train_precision = validate(train_data_loader, model, device, thresholds)
+    valid_precision = validate(valid_data_loader, model, device, thresholds)
+    test_precision = validate(test_data_loader, model, device, thresholds)
+
     print(f"Epoch #{epoch + 1}, Precision: {precision}")
     train_loss.append(train_loss_history.value)
+    # valid_loss.append(valid_loss_history.value)
     precision_history.append(precision)
-annotate(model, device, train_loss, precision_history, threshold = 0.9)
+annotate(model, device, train_loss, valid_loss, precision_history, threshold = 0.9)
+
+# plot 1: training loss vs training steps
+# plot 2: training / val / test precision vs training steps (or epochs)
