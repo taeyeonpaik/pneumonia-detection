@@ -105,13 +105,13 @@ def validate(dataloader, model, device, thresholds):
         precision = np.mean(valid_image_precision)
     return precision
 
-def annotate(model, device, train_loss, precision_history, threshold):
-    test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png")
+def annotate(model, device, train_loss, valid_loss, precision_history, threshold):
+    test_images = os.listdir(f"/home/ec2-user/rsna/test_images_png") #"/Users/taeyeonpaik/Downloads/rsna/test_images_png"
     model.to(device).eval()
     results = []
     with torch.no_grad():
         for i, image in tqdm(enumerate(test_images), total = len(test_images)):
-            original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR)
+            original_image = cv2.imread(f"/home/ec2-user/rsna/test_images_png/{test_images[i]}", cv2.IMREAD_COLOR) #/Users/taeyeonpaik/Downloads/rsna/test_images_png/
             image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
             image = np.transpose(image, (2, 0, 1)).astype(np.float32)
             image = torch.tensor(image, dtype = torch.float).cuda()
@@ -127,7 +127,7 @@ def annotate(model, device, train_loss, precision_history, threshold):
                 cv2.rectangle(original_image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 0, 255), 3)
             plt.imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
             plt.axis('off')
-            plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}")
+            plt.savefig(f"/home/ec2-user/rsna/test_images_bbox/{test_images[i]}") #/Users/taeyeonpaik/Downloads/rsna/test_images_bbox/
             plt.close()
             result = {'patientId': test_images[i].split('.')[0], 'PredictionString': format_prediction_string(boxes, scores) if len(outputs[0]['boxes']) != 0 else None}
             results.append(result)
@@ -136,12 +136,14 @@ def annotate(model, device, train_loss, precision_history, threshold):
     plt.plot(train_loss, label = 'Training Loss')
     plt.legend()
     plt.show()
-    plt.savefig(f"/home/ec2-user/rsna/loss.png")
+    plt.savefig(f"/home/ec2-user/rsna/loss.png") #/Users/taeyeonpaik/Downloads/rsna/loss.png
     plt.figure()
-    plt.plot(precision_history, label = 'Testing Precision')
+    plt.plot(train_precision_history, label = 'Train Precision')
+    plt.plot(valid_precision_history, label = 'Valid Precision')
+    plt.plot(test_precision_history, label = 'Test Precision')
     plt.legend()
     plt.show()
-    plt.savefig(f"/home/ec2-user/rsna/precision.png")
+    plt.savefig(f"/home/ec2-user/rsna/precision.png") #/Users/taeyeonpaik/Downloads/rsna/precision.png
     return submission_dataframe
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -153,14 +155,18 @@ train_data_loader, valid_data_loader, test_data_loader = get_data_loader(batch_s
 optimizer = torch.optim.SGD(params, lr = 0.005, momentum = 0.9, weight_decay = 0.0005)
 learning_rate_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 4, gamma = 0.1)
 
-train_loss, precision_history = [], []
+train_loss, train_precision_history, valid_precision_history, test_precision_history = [], [], [], []
 for epoch in range(total_epochs):
     train_loss_history, end, start = train(train_data_loader, learning_rate_scheduler, model, optimizer, device, loss_history, epoch + 1)
     print(f"Epoch #{epoch + 1}, Loss: {train_loss_history.value}, Time: {(end - start) / 60:.3f} Minutes")
-    precision = validate(test_data_loader, model, device, thresholds)
+    train_precision = validate(train_data_loader, model, device, thresholds)
+    valid_precision = validate(valid_data_loader, model, device, thresholds)
+    test_precision = validate(test_data_loader, model, device, thresholds)
     print(f"Epoch #{epoch + 1}, Precision: {precision}")
     train_loss.append(train_loss_history.value)
-    precision_history.append(precision)
+    train_precision_history.append(train_precision)
+    valid_precision_history.append(valid_precision)
+    test_precision_history.append(test_precision)
     if learning_rate_scheduler is not None:
         learning_rate_scheduler.step()
 annotate(model, device, train_loss, precision_history, threshold = 0.9)

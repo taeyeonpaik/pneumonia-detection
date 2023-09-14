@@ -27,8 +27,9 @@ class RSNADataset(Dataset):
         boxes[2] += boxes[0]
         boxes[3] += boxes[1]
         sample = self.transform(**{'image': image, 'boxes': boxes})
-        target = {'boxes': torch.tensor(sample['boxes'].astype(np.float32)), 'labels': torch.tensor(labels.astype(np.int64))}
-        return sample['image'], target, info[0]
+        sample_boxes = torch.tensor(sample['boxes'].astype(np.float32))
+        sample_labels = torch.tensor(labels.astype(np.int64))
+        return sample['image'], {'boxes': sample_boxes, 'labels': sample_labels}, info[0]
 
     def __len__(self):
         return self.image_ids.shape[0]

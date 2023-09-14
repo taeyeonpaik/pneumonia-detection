@@ -8,11 +8,7 @@ def train(dataloader, model, optimizer, device, loss_history, loss_function_clas
     start = time.time()
     loss_history.reset()
     progress_bar = tqdm(total = len(dataloader))
-    ctr = 0
     for images, targets, _ in dataloader:
-        ctr += 1
-        if ctr % 100 == 0:
-            # log precision
         batch_start = time.time()
         images = torch.stack([image.to(device) for image in images])
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
