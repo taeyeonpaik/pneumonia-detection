@@ -49,6 +49,7 @@ class Averager:
 
 def best_match(truth, prediction, prediction_index, threshold = 0.5, ious = None):
     best_match_intersection_over_union, best_match_index = -np.inf, -1
+    print(truth)
     for truth_index in range(len(truth)):
         if truth[truth_index][0] < 0:
             continue
@@ -94,17 +95,34 @@ def validate(dataloader, model, device, thresholds):
     model.eval()
     with torch.no_grad():
         for images, targets, _ in dataloader:
-            images = list(image.to(device) for image in images)
+            images = torch.stack([image.to(device) for image in images])
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
             outputs = model(images)
+            print(images.shape)
+            print(outputs.shape)
+            labels = torch.Tensor([target['labels'] for target in targets]).to(device)
+            print(labels)
+            boxes = torch.stack([target['boxes'] for target in targets]).to(device)
+            boxes = boxes[labels.bool()]
+            
+            # Going through all images one by one
             for i, _ in enumerate(images):
-                boxes = outputs[i]['boxes'].data.cpu().numpy()
-                scores = outputs[i]['scores'].data.cpu().numpy()
+                # prediction
+                predicted_boxes = outputs[i, 1:5].data.cpu().numpy()
+                predicted_scores = outputs[i, 0].data.cpu().numpy()
+                print(predicted_boxes, predicted_scores)
+
+                # ground truth
                 truth_boxes = targets[i]['boxes'].cpu().numpy()
+
+                # should comment out the next 2 lines if filtering is already done in the dataset class
+                # predicted_boxes = predicted_boxes[labels.cpu().bool()]
+                # predicted_scores = predicted_scores[labels.bool()]
                 preds_sorted_idx = np.argsort(scores)[::-1]
-                predictions_sorted = boxes[preds_sorted_idx]
-                image_precision = calculate_image_precision(predictions_sorted, truth_boxes, thresholds)
+                predictions_sorted = predicted_boxes[preds_sorted_idx]
+                image_precision = calculate_image_precision(truth_boxes, predictions_sorted, thresholds)
                 valid_image_precision.append(image_precision)
+        
         precision = np.mean(valid_image_precision)
     return precision
 

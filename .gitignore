@@ -1,6 +1,7 @@
 .vscode/
 test_images/
 test_images_png/
+test_images_bbox/
 train_images/
 train_images_png/
 *.csv
