@@ -1,4 +1,5 @@
 import cv2
+import math
 import torch
 import numpy as np
 import pandas as pd
@@ -15,20 +16,19 @@ class RSNADataset(Dataset):
         self.transform = transform
         
     def __getitem__(self, index):
-        # I need to make it so that it doesn't only check for when the patient id equals the image id. I need to go 
-        # one by one to make sure that they are all separate. Otherwise, they're gonna be a 2d info df
-        # image_id = self.image_ids[index]
-        # info = self.dataframe[self.dataframe['patientId'] == image_id]
         info = self.dataframe.loc[index]
         image = cv2.imread(f'{self.image_directory}/{info[0]}.png', cv2.IMREAD_COLOR)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
         boxes, labels = info[1:5], info[5]
+        # If bounding box is nan, replace with 0
+        for i in range(len(boxes)):
+            if math.isnan(boxes[i]):
+                boxes[i] = 1
         boxes[2] += boxes[0]
         boxes[3] += boxes[1]
         sample = self.transform(**{'image': image, 'boxes': boxes})
         sample_boxes = torch.tensor(sample['boxes'].astype(np.float32))
         sample_labels = torch.tensor(labels, dtype = torch.int64)
-        # detect if bbox is nan, if so, replace with 0
         return sample['image'], {'boxes': sample_boxes, 'labels': sample_labels}, info[0]
 
     def __len__(self):
@@ -46,21 +46,14 @@ def collate(batch):
 def prepare_data():
     directory = f"/home/ec2-user/rsna/train_images_png" # "/Users/taeyeonpaik/Downloads/rsna/train_images_png"
     dataframe = pd.read_csv(f"/home/ec2-user/rsna/stage_2_train_labels.csv") # "/Users/taeyeonpaik/Downloads/rsna/stage_2_train_labels.csv"
-    dataframe_positive = pd.DataFrame(columns = ['patientId', 'x', 'y', 'width', 'height', 'Target'])
-    # Filter out negative cases
-    k = 0
-    for i in range(len(dataframe)):
-        if dataframe.loc[i]['Target'] == 1:
-            dataframe_positive.loc[k] = dataframe.loc[i]
-            k += 1
     # Split images
     image_ids = dataframe['patientId']
     train_ids = image_ids[:-5000]
     valid_ids = image_ids[-5000:-2500]
     test_ids = image_ids[-2500:]
-    train_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(train_ids)]
-    valid_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(valid_ids)]
-    test_dataframe = dataframe_positive[dataframe_positive['patientId'].isin(test_ids)]
+    train_dataframe = dataframe[dataframe['patientId'].isin(train_ids)]
+    valid_dataframe = dataframe[dataframe['patientId'].isin(valid_ids)]
+    test_dataframe = dataframe[dataframe['patientId'].isin(test_ids)]
     train_dataframe = train_dataframe.reset_index(drop = True)
     valid_dataframe = valid_dataframe.reset_index(drop = True)
     test_dataframe = test_dataframe.reset_index(drop = True)
