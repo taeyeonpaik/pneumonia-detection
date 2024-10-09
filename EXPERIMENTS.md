@@ -6,3 +6,7 @@ This working log records successful and unsuccessful experiments during developm
 
 Removed cached bytecode, local datasets, Finder metadata, generated images, checkpoints, and logs from version control while preserving the original detector source.
 
+## refactor: make DICOM conversion portable
+
+Replaced machine-specific conversion paths with a command-line data directory and explicit input discovery.
+
