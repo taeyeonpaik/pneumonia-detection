@@ -10,3 +10,7 @@ Removed cached bytecode, local datasets, Finder metadata, generated images, chec
 
 Replaced machine-specific conversion paths with a command-line data directory and explicit input discovery.
 
+## refactor: add configurable data paths and deterministic splits
+
+Unified image discovery, grouped annotations by patient, and introduced reproducible train, validation, and held-out test splits.
+
