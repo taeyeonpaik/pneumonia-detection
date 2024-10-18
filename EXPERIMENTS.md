@@ -14,3 +14,7 @@ Replaced machine-specific conversion paths with a command-line data directory an
 
 Unified image discovery, grouped annotations by patient, and introduced reproducible train, validation, and held-out test splits.
 
+## refactor: modernize Faster R-CNN model construction
+
+Updated the legacy detector to a configurable torchvision Faster R-CNN with a ResNet-50 FPN backbone and replaceable prediction head.
+
