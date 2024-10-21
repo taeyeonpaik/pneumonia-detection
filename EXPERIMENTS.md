@@ -18,3 +18,7 @@ Unified image discovery, grouped annotations by patient, and introduced reproduc
 
 Updated the legacy detector to a configurable torchvision Faster R-CNN with a ResNet-50 FPN backbone and replaceable prediction head.
 
+## feat: train detector with mixed precision and progress reporting
+
+Added CUDA automatic mixed precision, scaler support, per-batch progress, and stable loss aggregation.
+

@@ -1,27 +1,40 @@
 import time
-import torch
+from contextlib import nullcontext
 
-def train(dataloader, learning_rate_scheduler, model, optimizer, device, loss_history, epoch):
+import torch
+from tqdm import tqdm
+
+
+def autocast_context(use_amp):
+    return torch.cuda.amp.autocast() if use_amp else nullcontext()
+
+
+def train(dataloader, model, optimizer, device, loss_history, scaler=None, use_amp=False):
     model.train()
     start = time.time()
     loss_history.reset()
-    for j, (images, targets, _) in enumerate(dataloader):
-        batch_start = time.time()
-        # Reformat images and targets
-        images = list(image.to(device) for image in images)
-        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
-        # Convert format of targets to be compatible with FRCNN
-        for i in range(len(targets)):
-            targets[i]['boxes'] = targets[i]['boxes'].unsqueeze(0)
-            targets[i]['labels'] = targets[i]['labels'].unsqueeze(0)
-        loss_dictionary = model(images, targets)
-        losses = sum(loss for loss in loss_dictionary.values())
-        loss_value = losses.item()
-        loss_history.send(loss_value)
-        optimizer.zero_grad()
-        losses.backward()
-        optimizer.step()
-        batch_end = time.time()
-        print(f"Epoch #{epoch}, Batch #{j + 1}/{len(dataloader)}, Loss: {loss_history.value:.4f}, Time: {(batch_end - batch_start) / 60:.3f} Minutes", end = '\r')
+    non_blocking = device.type == "cuda"
+
+    for images, targets, _ in tqdm(dataloader, total=len(dataloader), desc="Training", leave=False):
+        images = [image.to(device, non_blocking=non_blocking) for image in images]
+        targets = [
+            {key: value.to(device, non_blocking=non_blocking) for key, value in target.items()}
+            for target in targets
+        ]
+
+        with autocast_context(use_amp):
+            loss_dictionary = model(images, targets)
+            losses = sum(loss for loss in loss_dictionary.values())
+        loss_history.send(losses.item())
+
+        optimizer.zero_grad(set_to_none=True)
+        if scaler is not None and use_amp:
+            scaler.scale(losses).backward()
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            losses.backward()
+            optimizer.step()
+
     end = time.time()
     return loss_history, end, start
