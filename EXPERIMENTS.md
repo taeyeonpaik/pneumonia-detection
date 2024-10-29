@@ -22,3 +22,7 @@ Updated the legacy detector to a configurable torchvision Faster R-CNN with a Re
 
 Added CUDA automatic mixed precision, scaler support, per-batch progress, and stable loss aggregation.
 
+## feat: evaluate image-level F1 and matched-box IoU
+
+Added thresholded image-level confusion metrics, detector precision, matched true-positive IoU, prediction exports, plots, and held-out evaluation.
+
