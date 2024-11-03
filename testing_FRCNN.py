@@ -332,6 +332,7 @@ def save_training_plots(output_dir, train_loss, precision_history, f1_history=No
 
 
 def save_confusion_matrix(output_path, metrics, title):
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     matrix = np.array([[metrics["tn"], metrics["fp"]], [metrics["fn"], metrics["tp"]]])
     plt.figure(figsize=(5, 4))
     plt.imshow(matrix, cmap="Blues")
@@ -349,6 +350,7 @@ def save_confusion_matrix(output_path, metrics, title):
 
 
 def save_metrics_csv(output_path, metrics_history):
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(metrics_history).to_csv(output_path, index=False)
 
 

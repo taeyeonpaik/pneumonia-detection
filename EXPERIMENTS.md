@@ -26,3 +26,7 @@ Added CUDA automatic mixed precision, scaler support, per-batch progress, and st
 
 Added thresholded image-level confusion metrics, detector precision, matched true-positive IoU, prediction exports, plots, and held-out evaluation.
 
+## fix: create output directories before writing metrics
+
+Fixed failures when resumed or partially deleted runs attempted to write CSV, confusion-matrix, and checkpoint files into missing directories.
+
