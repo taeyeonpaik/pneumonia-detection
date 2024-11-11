@@ -30,3 +30,7 @@ Added thresholded image-level confusion metrics, detector precision, matched tru
 
 Fixed failures when resumed or partially deleted runs attempted to write CSV, confusion-matrix, and checkpoint files into missing directories.
 
+## feat: select detector checkpoints and confidence thresholds
+
+Added validation-only checkpoint and score-threshold selection before one-time held-out test evaluation.
+
