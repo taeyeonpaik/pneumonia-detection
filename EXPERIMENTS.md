@@ -34,3 +34,7 @@ Fixed failures when resumed or partially deleted runs attempted to write CSV, co
 
 Added validation-only checkpoint and score-threshold selection before one-time held-out test evaluation.
 
+## feat: mine false-positive detector hard negatives
+
+Collected normal radiographs repeatedly assigned high-confidence boxes so they could be oversampled during detector retraining.
+
