@@ -38,3 +38,7 @@ Added validation-only checkpoint and score-threshold selection before one-time h
 
 Collected normal radiographs repeatedly assigned high-confidence boxes so they could be oversampled during detector retraining.
 
+## feat: add AdamW balanced-sampling detector experiments
+
+Compared optimizer, learning-rate, positive-sampling, and hard-negative weighting configurations against the original SGD detector.
+
