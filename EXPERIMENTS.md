@@ -42,3 +42,7 @@ Collected normal radiographs repeatedly assigned high-confidence boxes so they c
 
 Compared optimizer, learning-rate, positive-sampling, and hard-negative weighting configurations against the original SGD detector.
 
+## fix: reduce redundant checkpoint writes
+
+Added weights-only and selective-save controls after full optimizer checkpoints exhausted the EC2 volume during repeated tuning runs.
+
