@@ -46,3 +46,7 @@ Compared optimizer, learning-rate, positive-sampling, and hard-negative weightin
 
 Added weights-only and selective-save controls after full optimizer checkpoints exhausted the EC2 volume during repeated tuning runs.
 
+## refactor: retire the original standalone CNN
+
+Removed the superseded prototype classifier after the Faster R-CNN data and evaluation path became the stable baseline.
+
