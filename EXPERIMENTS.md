@@ -50,3 +50,7 @@ Added weights-only and selective-save controls after full optimizer checkpoints 
 
 Removed the superseded prototype classifier after the Faster R-CNN data and evaluation path became the stable baseline.
 
+## docs: document portable detector training workflow
+
+Documented the cleaned data layout, DICOM conversion, detector training, threshold selection, and generated artifacts.
+
