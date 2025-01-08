@@ -54,3 +54,7 @@ Removed the superseded prototype classifier after the Faster R-CNN data and eval
 
 Documented the cleaned data layout, DICOM conversion, detector training, threshold selection, and generated artifacts.
 
+## feat: add configurable transfer-learning classifiers
+
+Introduced torchvision and timm classifier construction, image-level datasets, threshold sweeps, checkpoint selection, and held-out evaluation.
+
