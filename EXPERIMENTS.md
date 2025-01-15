@@ -58,3 +58,7 @@ Documented the cleaned data layout, DICOM conversion, detector training, thresho
 
 Introduced torchvision and timm classifier construction, image-level datasets, threshold sweeps, checkpoint selection, and held-out evaluation.
 
+## experiment: fine-tune Swin-T at 384 pixels
+
+Established the first transformer classifier baseline and compared its image-level errors with Faster R-CNN.
+
