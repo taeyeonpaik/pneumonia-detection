@@ -62,3 +62,7 @@ Introduced torchvision and timm classifier construction, image-level datasets, t
 
 Established the first transformer classifier baseline and compared its image-level errors with Faster R-CNN.
 
+## feat: sweep classifier confidence thresholds
+
+Selected each classifier epoch and operating threshold using validation F1 rather than a fixed probability cutoff.
+
