@@ -160,12 +160,12 @@ class RSNAClassificationDataset(Dataset):
 def classification_collate(batch):
     if len(batch[0]) == 4:
         images, metadata, labels, image_ids = zip(*batch)
-        images = torch.stack(list(images), dim=0)
-        metadata = torch.stack(list(metadata), dim=0)
+        images = torch.stack([image.clone() for image in images], dim=0)
+        metadata = torch.stack([values.clone() for values in metadata], dim=0)
         labels = torch.stack(list(labels), dim=0)
         return images, metadata, labels, list(image_ids)
     images, labels, image_ids = zip(*batch)
-    images = torch.stack(list(images), dim=0)
+    images = torch.stack([image.clone() for image in images], dim=0)
     labels = torch.stack(list(labels), dim=0)
     return images, labels, list(image_ids)
 

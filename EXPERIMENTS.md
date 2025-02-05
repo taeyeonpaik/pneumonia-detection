@@ -66,3 +66,7 @@ Established the first transformer classifier baseline and compared its image-lev
 
 Selected each classifier epoch and operating threshold using validation F1 rather than a fixed probability cutoff.
 
+## fix: clone non-resizable tensors during collation
+
+Resolved DataLoader storage resize errors by cloning transformed tensors before stacking custom batches.
+
