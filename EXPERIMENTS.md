@@ -70,3 +70,7 @@ Selected each classifier epoch and operating threshold using validation F1 rathe
 
 Resolved DataLoader storage resize errors by cloning transformed tensors before stacking custom batches.
 
+## experiment: fine-tune Swin-T at 512 pixels
+
+Raised classifier resolution to preserve subtle opacities; the higher-resolution Swin improved the later detector fusion despite mixed standalone results.
+
