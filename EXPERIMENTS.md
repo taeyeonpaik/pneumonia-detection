@@ -74,3 +74,7 @@ Resolved DataLoader storage resize errors by cloning transformed tensors before 
 
 Raised classifier resolution to preserve subtle opacities; the higher-resolution Swin improved the later detector fusion despite mixed standalone results.
 
+## feat: combine classifier and detector decisions
+
+Added AND, OR, override, and confidence-gated sweeps across Swin image probabilities and Faster R-CNN evidence.
+
