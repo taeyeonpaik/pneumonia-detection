@@ -78,3 +78,7 @@ Raised classifier resolution to preserve subtle opacities; the higher-resolution
 
 Added AND, OR, override, and confidence-gated sweeps across Swin image probabilities and Faster R-CNN evidence.
 
+## experiment: fine-tune Swin on classifier hard negatives
+
+Mined high-confidence normal false positives and retrained Swin with weighted hard-negative sampling; the attempt improved some operating points but did not eliminate the shared error ceiling.
+
