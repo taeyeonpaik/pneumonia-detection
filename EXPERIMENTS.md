@@ -82,3 +82,7 @@ Added AND, OR, override, and confidence-gated sweeps across Swin image probabili
 
 Mined high-confidence normal false positives and retrained Swin with weighted hard-negative sampling; the attempt improved some operating points but did not eliminate the shared error ceiling.
 
+## feat: add CXR augmentation and imbalance-aware losses
+
+Added CLAHE, gamma and contrast perturbations, balanced batches, focal and asymmetric loss, label smoothing, MixUp, and soft F-beta experiments.
+
