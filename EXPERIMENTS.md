@@ -86,3 +86,7 @@ Mined high-confidence normal false positives and retrained Swin with weighted ha
 
 Added CLAHE, gamma and contrast perturbations, balanced batches, focal and asymmetric loss, label smoothing, MixUp, and soft F-beta experiments.
 
+## feat: mine Faster R-CNN region candidates
+
+Exported detector proposals and padded crop geometry for a second-stage regional classifier.
+
