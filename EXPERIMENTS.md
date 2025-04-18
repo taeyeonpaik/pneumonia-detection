@@ -90,3 +90,7 @@ Added CLAHE, gamma and contrast perturbations, balanced batches, focal and asymm
 
 Exported detector proposals and padded crop geometry for a second-stage regional classifier.
 
+## experiment: train Swin classifiers on detector regions
+
+Trained a Swin model on proposed opacity regions to veto spurious detections; standalone and fused ROI results remained below the best whole-image gate.
+
