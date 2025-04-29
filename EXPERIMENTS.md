@@ -94,3 +94,7 @@ Exported detector proposals and padded crop geometry for a second-stage regional
 
 Trained a Swin model on proposed opacity regions to veto spurious detections; standalone and fused ROI results remained below the best whole-image gate.
 
+## experiment: sweep ROI filtering rules
+
+Swept detector and region-classifier thresholds and measured localization quality; the best held-out ROI-filter F1 remained around 0.67.
+
