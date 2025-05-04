@@ -98,3 +98,7 @@ Trained a Swin model on proposed opacity regions to veto spurious detections; st
 
 Swept detector and region-classifier thresholds and measured localization quality; the best held-out ROI-filter F1 remained around 0.67.
 
+## experiment: evaluate dual-Swin hybrid gating
+
+Compared the original and CXR-loss Swin checkpoints with detector rescue and veto rules; correlated errors limited the gain.
+
