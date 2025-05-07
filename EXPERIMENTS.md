@@ -102,3 +102,7 @@ Swept detector and region-classifier thresholds and measured localization qualit
 
 Compared the original and CXR-loss Swin checkpoints with detector rescue and veto rules; correlated errors limited the gain.
 
+## experiment: add ConvNeXt-Tiny classifier
+
+Introduced a convolutional classifier to diversify the transformer-heavy ensemble and measured its independent precision-recall behavior.
+
