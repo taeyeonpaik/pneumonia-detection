@@ -106,3 +106,7 @@ Compared the original and CXR-loss Swin checkpoints with detector rescue and vet
 
 Introduced a convolutional classifier to diversify the transformer-heavy ensemble and measured its independent precision-recall behavior.
 
+## experiment: scale ConvNeXt classifier capacity
+
+Tested ConvNeXt-Small and larger ConvNeXtV2 variants after the tiny model failed to improve the best fusion rule.
+
