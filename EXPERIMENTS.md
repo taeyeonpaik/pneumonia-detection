@@ -110,3 +110,7 @@ Introduced a convolutional classifier to diversify the transformer-heavy ensembl
 
 Tested ConvNeXt-Small and larger ConvNeXtV2 variants after the tiny model failed to improve the best fusion rule.
 
+## feat: add logistic meta-fusion
+
+Added calibrated feature extraction and learned logistic fusion over classifier probabilities, detector confidence, box count, and box geometry.
+
