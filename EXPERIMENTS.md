@@ -114,3 +114,7 @@ Tested ConvNeXt-Small and larger ConvNeXtV2 variants after the tiny model failed
 
 Added calibrated feature extraction and learned logistic fusion over classifier probabilities, detector confidence, box count, and box geometry.
 
+## experiment: add nonlinear MLP fusion
+
+Tested a regularized MLP fusion head. A 0.997 validation F1 followed by 0.567 held-out F1 exposed severe validation-fit leakage rather than a real improvement.
+
