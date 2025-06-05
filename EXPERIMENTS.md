@@ -118,3 +118,7 @@ Added calibrated feature extraction and learned logistic fusion over classifier 
 
 Tested a regularized MLP fusion head. A 0.997 validation F1 followed by 0.567 held-out F1 exposed severe validation-fit leakage rather than a real improvement.
 
+## fix: fit learned fusion on training features
+
+Added a clean train-fit fusion path and retained validation solely for hyperparameter and threshold selection.
+
