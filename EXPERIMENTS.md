@@ -122,3 +122,7 @@ Tested a regularized MLP fusion head. A 0.997 validation F1 followed by 0.567 he
 
 Added a clean train-fit fusion path and retained validation solely for hyperparameter and threshold selection.
 
+## experiment: add RSNA-pretrained XRV DenseNet
+
+Evaluated TorchXRayVision DenseNet-121 pretrained on RSNA chest radiographs. High recall came with excessive false positives, and replacing its output head exposed normalization incompatibilities.
+

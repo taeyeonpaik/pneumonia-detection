@@ -331,8 +331,6 @@ def build_xrv_classifier(weights_name):
         raise AttributeError("Expected TorchXRayVision DenseNet to expose a classifier layer.")
     in_features = model.classifier.in_features
     model.classifier = nn.Linear(in_features, 1)
-    if hasattr(model, "op_threshs"):
-        model.op_threshs = None
     return model
 
 
@@ -349,8 +347,6 @@ def build_xrv_feature_extractor(weights_name):
     if not hasattr(model, "features"):
         raise AttributeError("Expected TorchXRayVision DenseNet to expose a features module.")
     feature_dim = int(model.classifier.in_features)
-    if hasattr(model, "op_threshs"):
-        model.op_threshs = None
     return model, feature_dim
 
 
