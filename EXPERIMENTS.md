@@ -130,3 +130,7 @@ Evaluated TorchXRayVision DenseNet-121 pretrained on RSNA chest radiographs. Hig
 
 Separated ImageNet and XRV normalization paths after one-channel and three-channel tensors collided in the same batch.
 
+## fix: disable XRV operating-point normalization for custom heads
+
+Cleared TorchXRayVision operating-point thresholds after replacing the 18-output classifier with a binary head, fixing the output-mask shape mismatch.
+
