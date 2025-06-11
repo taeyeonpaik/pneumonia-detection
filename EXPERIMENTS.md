@@ -126,3 +126,7 @@ Added a clean train-fit fusion path and retained validation solely for hyperpara
 
 Evaluated TorchXRayVision DenseNet-121 pretrained on RSNA chest radiographs. High recall came with excessive false positives, and replacing its output head exposed normalization incompatibilities.
 
+## fix: normalize mixed grayscale and RGB batches
+
+Separated ImageNet and XRV normalization paths after one-channel and three-channel tensors collided in the same batch.
+
