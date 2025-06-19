@@ -134,3 +134,7 @@ Separated ImageNet and XRV normalization paths after one-channel and three-chann
 
 Cleared TorchXRayVision operating-point thresholds after replacing the 18-output classifier with a binary head, fixing the output-mask shape mismatch.
 
+## experiment: combine transformer and DenseNet features
+
+Evaluated hybrid ViT, Swin, DenseNet-121, DenseNet-169, and DenseNet-201 feature extractors; the larger hybrids trained successfully but did not surpass the detector-Swin gate.
+
