@@ -138,3 +138,7 @@ Cleared TorchXRayVision operating-point thresholds after replacing the 18-output
 
 Evaluated hybrid ViT, Swin, DenseNet-121, DenseNet-169, and DenseNet-201 feature extractors; the larger hybrids trained successfully but did not surpass the detector-Swin gate.
 
+## feat: extract age sex and projection metadata
+
+Extracted robust age, sex, and AP/PA view features from all available DICOM headers with missing-value indicators.
+
