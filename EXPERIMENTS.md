@@ -142,3 +142,7 @@ Evaluated hybrid ViT, Swin, DenseNet-121, DenseNet-169, and DenseNet-201 feature
 
 Extracted robust age, sex, and AP/PA view features from all available DICOM headers with missing-value indicators.
 
+## feat: condition classifiers on DICOM metadata
+
+Fused normalized metadata with image embeddings in custom classifier heads and used the same features during validation and held-out inference.
+
