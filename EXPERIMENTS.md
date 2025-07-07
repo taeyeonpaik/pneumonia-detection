@@ -146,3 +146,7 @@ Extracted robust age, sex, and AP/PA view features from all available DICOM head
 
 Fused normalized metadata with image embeddings in custom classifier heads and used the same features during validation and held-out inference.
 
+## experiment: retrain detector IoU variants
+
+Retrained proposal heads at alternate foreground and background IoU thresholds; stricter objectives improved box precision but reduced image-level recall.
+
