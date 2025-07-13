@@ -150,3 +150,7 @@ Fused normalized metadata with image embeddings in custom classifier heads and u
 
 Retrained proposal heads at alternate foreground and background IoU thresholds; stricter objectives improved box precision but reduced image-level recall.
 
+## experiment: fuse metadata Swin with original detector
+
+Returned to the strongest IoU-0.50 Faster R-CNN and combined it with metadata-aware Swin and the best ConvNeXt candidate, reaching the first sustained improvement over the earlier 0.688 plateau.
+
