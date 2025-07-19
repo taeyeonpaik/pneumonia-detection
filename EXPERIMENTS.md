@@ -154,3 +154,7 @@ Retrained proposal heads at alternate foreground and background IoU thresholds; 
 
 Returned to the strongest IoU-0.50 Faster R-CNN and combined it with metadata-aware Swin and the best ConvNeXt candidate, reaching the first sustained improvement over the earlier 0.688 plateau.
 
+## feat: export component confusion matrices and error lists
+
+Generated per-model confusion matrices, patient-level false-positive and false-negative lists, overlap tables, and metadata subgroup metrics.
+
