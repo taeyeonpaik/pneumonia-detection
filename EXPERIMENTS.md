@@ -158,3 +158,7 @@ Returned to the strongest IoU-0.50 Faster R-CNN and combined it with metadata-aw
 
 Generated per-model confusion matrices, patient-level false-positive and false-negative lists, overlap tables, and metadata subgroup metrics.
 
+## experiment: tune metadata-stratified precision gates
+
+Selected validation rules by age, sex, and projection subgroup. Age buckets produced a small gain, while finer sweeps regressed on held-out data.
+
