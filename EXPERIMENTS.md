@@ -162,3 +162,7 @@ Generated per-model confusion matrices, patient-level false-positive and false-n
 
 Selected validation rules by age, sex, and projection subgroup. Age buckets produced a small gain, while finer sweeps regressed on held-out data.
 
+## experiment: mine shared ensemble false positives
+
+Focused retraining on false positives shared by classifier and detector. The resulting Swin variants shifted precision and recall but did not improve the overall best F1.
+
