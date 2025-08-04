@@ -166,3 +166,7 @@ Selected validation rules by age, sex, and projection subgroup. Age buckets prod
 
 Focused retraining on false positives shared by classifier and detector. The resulting Swin variants shifted precision and recall but did not improve the overall best F1.
 
+## experiment: audit alternate dataset splits
+
+Measured class prevalence and patient membership across several deterministic seeds before selecting a balanced alternate split for robustness testing.
+
