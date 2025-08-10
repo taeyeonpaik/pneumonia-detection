@@ -170,3 +170,7 @@ Focused retraining on false positives shared by classifier and detector. The res
 
 Measured class prevalence and patient membership across several deterministic seeds before selecting a balanced alternate split for robustness testing.
 
+## experiment: retune classifiers and detector on seed 2024
+
+Retrained the strongest components on the alternate split. Its 0.688 held-out result confirmed that the original split was not the sole bottleneck.
+
