@@ -174,3 +174,7 @@ Measured class prevalence and patient membership across several deterministic se
 
 Retrained the strongest components on the alternate split. Its 0.688 held-out result confirmed that the original split was not the sole bottleneck.
 
+## fix: resume tuning after missing output directories
+
+Made every tuning stage recreate its output directory, skip valid artifacts, and recover safely from deleted partial runs and full-disk checkpoint failures.
+
