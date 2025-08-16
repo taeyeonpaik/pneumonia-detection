@@ -178,3 +178,7 @@ Retrained the strongest components on the alternate split. Its 0.688 held-out re
 
 Made every tuning stage recreate its output directory, skip valid artifacts, and recover safely from deleted partial runs and full-disk checkpoint failures.
 
+## experiment: ensemble diverse detectors with WBF
+
+Trained an independent scaled Faster R-CNN and merged boxes with weighted box fusion. Validation selected WBF settings, but held-out F1 remained below the single-detector metadata ensemble.
+
