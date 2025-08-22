@@ -182,3 +182,7 @@ Made every tuning stage recreate its output directory, skip valid artifacts, and
 
 Trained an independent scaled Faster R-CNN and merged boxes with weighted box fusion. Validation selected WBF settings, but held-out F1 remained below the single-detector metadata ensemble.
 
+## experiment: expand backbone and loss search
+
+Automated EfficientNet-B3, DenseNet-169, XRV, asymmetric-loss, and soft-F-beta experiments with balanced sampling and shared hard negatives.
+
