@@ -186,3 +186,7 @@ Trained an independent scaled Faster R-CNN and merged boxes with weighted box fu
 
 Automated EfficientNet-B3, DenseNet-169, XRV, asymmetric-loss, and soft-F-beta experiments with balanced sampling and shared hard negatives.
 
+## experiment: evaluate ConvNeXtV2 and SwinV2
+
+Compared ConvNeXtV2 resolution and loss variants plus SwinV2-Base; added diversity but no configuration reliably cleared the target.
+
