@@ -190,3 +190,7 @@ Automated EfficientNet-B3, DenseNet-169, XRV, asymmetric-loss, and soft-F-beta e
 
 Compared ConvNeXtV2 resolution and loss variants plus SwinV2-Base; added diversity but no configuration reliably cleared the target.
 
+## fix: bound worker memory and expose pipeline progress
+
+Reduced memory pressure after DataLoader workers were killed, added unbuffered stage output, and ensured long EC2 jobs reported per-stage and per-batch progress.
+
