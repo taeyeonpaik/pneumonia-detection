@@ -194,3 +194,7 @@ Compared ConvNeXtV2 resolution and loss variants plus SwinV2-Base; added diversi
 
 Reduced memory pressure after DataLoader workers were killed, added unbuffered stage output, and ensured long EC2 jobs reported per-stage and per-batch progress.
 
+## experiment: prepare borderline-label review workflow
+
+Generated a review template for uncertain and misclassified cases. The workflow was retained for auditability, but dataset labels were ultimately left unchanged.
+
