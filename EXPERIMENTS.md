@@ -198,3 +198,7 @@ Reduced memory pressure after DataLoader workers were killed, added unbuffered s
 
 Generated a review template for uncertain and misclassified cases. The workflow was retained for auditability, but dataset labels were ultimately left unchanged.
 
+## experiment: add train-fit and out-of-fold fusion
+
+Added train-fit, stratified, and out-of-fold fusion workflows to evaluate learned combinations without reusing validation labels for fitting.
+
