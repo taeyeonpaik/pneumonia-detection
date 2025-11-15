@@ -202,3 +202,7 @@ Generated a review template for uncertain and misclassified cases. The workflow 
 
 Added train-fit, stratified, and out-of-fold fusion workflows to evaluate learned combinations without reusing validation labels for fitting.
 
+## experiment: evaluate tabular and bagged meta-fusion
+
+Tested nonlinear tabular models, bootstrap bagging, elite-model selection, and stratified variants. Added complexity did not generalize better than the precision gate.
+
