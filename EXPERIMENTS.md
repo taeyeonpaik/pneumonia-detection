@@ -206,3 +206,7 @@ Added train-fit, stratified, and out-of-fold fusion workflows to evaluate learne
 
 Tested nonlinear tabular models, bootstrap bagging, elite-model selection, and stratified variants. Added complexity did not generalize better than the precision gate.
 
+## experiment: add stacked rescue veto and flexible gates
+
+Explored stacked rescue, veto, calibrated detector support, and flexible Boolean rules over cached predictions; the searches improved selected operating points but remained validation-sensitive.
+
