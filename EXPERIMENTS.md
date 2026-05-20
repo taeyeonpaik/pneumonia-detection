@@ -214,3 +214,7 @@ Explored stacked rescue, veto, calibrated detector support, and flexible Boolean
 
 Added a complementary EfficientNetV2-S classifier with the same eight metadata features, hard negatives, imbalance-aware training, and validation-selected thresholds.
 
+## fix: fall back when requested timm weights are unavailable
+
+Recovered from an unavailable timm EfficientNetV2 alias by using the supported torchvision EfficientNetV2-S implementation and preserving checkpoint metadata.
+
