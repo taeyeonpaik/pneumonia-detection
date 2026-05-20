@@ -210,3 +210,7 @@ Tested nonlinear tabular models, bootstrap bagging, elite-model selection, and s
 
 Explored stacked rescue, veto, calibrated detector support, and flexible Boolean rules over cached predictions; the searches improved selected operating points but remained validation-sensitive.
 
+## experiment: add metadata-aware EfficientNetV2-S
+
+Added a complementary EfficientNetV2-S classifier with the same eight metadata features, hard negatives, imbalance-aware training, and validation-selected thresholds.
+
