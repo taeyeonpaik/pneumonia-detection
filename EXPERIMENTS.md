@@ -218,3 +218,7 @@ Added a complementary EfficientNetV2-S classifier with the same eight metadata f
 
 Recovered from an unavailable timm EfficientNetV2 alias by using the supported torchvision EfficientNetV2-S implementation and preserving checkpoint metadata.
 
+## feat: calibrate classifier confidence and refine precision gate
+
+Applied validation temperature scaling and a coarse-to-fine coordinate search over classifier agreement, detector support, and override thresholds.
+
