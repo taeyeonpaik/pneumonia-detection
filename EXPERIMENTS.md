@@ -222,3 +222,7 @@ Recovered from an unavailable timm EfficientNetV2 alias by using the supported t
 
 Applied validation temperature scaling and a coarse-to-fine coordinate search over classifier agreement, detector support, and override thresholds.
 
+## feat: add horizontal-flip and CLAHE test-time augmentation
+
+Averaged original, horizontal-flip, and locally contrast-enhanced classifier predictions. CLAHE recovered additional true positives and raised held-out image F1 to 0.715.
+
