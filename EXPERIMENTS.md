@@ -226,3 +226,7 @@ Applied validation temperature scaling and a coarse-to-fine coordinate search ov
 
 Averaged original, horizontal-flip, and locally contrast-enhanced classifier predictions. CLAHE recovered additional true positives and raised held-out image F1 to 0.715.
 
+## fix: validate and lock exported model artifacts
+
+Fixed malformed artifact naming, copied the selected detector and classifier checkpoints, recorded thresholds and hashes, and exported final confusion and error reports.
+
