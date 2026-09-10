@@ -230,3 +230,7 @@ Averaged original, horizontal-flip, and locally contrast-enhanced classifier pre
 
 Fixed malformed artifact naming, copied the selected detector and classifier checkpoints, recorded thresholds and hashes, and exported final confusion and error reports.
 
+## feat: reproduce the best pipeline with error analysis
+
+Added a resumable reproduction workflow for the original split, selected checkpoints, fusion features, final metrics, and patient-level false-positive and false-negative analysis.
+
