@@ -1,0 +1,41 @@
+name: Syntax checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Parse Python sources
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          sources = sorted(Path(".").glob("*.py"))
+          for source in sources:
+              ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+          print(f"Parsed {len(sources)} Python files")
+          PY
+
+      - name: Check shell launchers
+        shell: bash
+        run: |
+          count=0
+          while IFS= read -r -d '' script; do
+            bash -n "$script"
+            count=$((count + 1))
+          done < <(find . -maxdepth 1 -name '*.sh' -print0)
+          echo "Checked ${count} shell scripts"
